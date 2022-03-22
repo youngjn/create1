@@ -246,7 +246,7 @@ class Particle {
 	}
 
 	draw() {
-		textSize(10);
+		textSize(20);
         text(emojiArray[this.emoji], this.x, this.y);
 
 	}
