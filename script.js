@@ -10,7 +10,7 @@ var typedKey = '';
 var printWords = '';
 var lastWord = '';
 var limitLength = 0;
-var emoji = "🤮🦠😷";
+var emoji = "😷🤮↔️";
 
 var emojiArray = Array.from(emoji);
 
@@ -18,10 +18,17 @@ let particles = [];
 
 let res = 8;
 var img;
+var packed;
+var maybe;
+var secured;
+var imgDisplay;
 
 
 function preload() {
   img = loadImage("logo.png");
+  packed = loadImage("packed.png");
+  maybe = loadImage("maybe.png");
+  secured = loadImage("secured.png");
 }
 
 
@@ -106,7 +113,7 @@ function draw() {
 	
 
 	textSize(20);
-	text('social distancing', 42.5, 40);
+	text('after covid', 42.5, 40);
 	fill(255);
 
 	textWrap(CHAR);
@@ -128,8 +135,8 @@ function draw() {
 	// 		val = 15;
 	// 	}
 	// }
-	textSize(40);
-	text(emojiArray[1], mouseX-20, mouseY+15);
+	textSize(60);
+	text(emojiArray[2], mouseX-18, mouseY+15);
 
 
 	for(var i=0; i<particles.length; i++) {
@@ -148,85 +155,47 @@ function draw() {
 }
 
 function keyPressed() {
-	limitLength = (width-85) * (height/42.5) / 12.1;
-
-	if(keyCode != 8 && keyCode !== 32 && keyCode !== 37 && keyCode !== 38 && keyCode !== 39 && keyCode !== 40) {
-		currentKey = key;
-		typedKey = '';
-	}
-
 	
-
-	if(keyCode == 8) {
-		if(words != '') {
-			lastWord = '';
-			var lastSpaceIndex = words.indexOf(' ', words.length-val);
-			
-			for (var i = words.length-1; i >= 0; i--) {
-				if(words[i] === ' ') {
-					lastWord = lastWord + words[i];
-				} else {
-					lastWord = lastWord + words[i];
-					break;
-				}
-			}
-					
-			
-
-			// lastWord = reverseString(lastWord);
-
-			
-			var difference = words.length-lastWord.length;
-			var removeCharacter = subset(words, difference);
-			words = words.slice(0, difference);
-
-		}
-		
-	} else if (keyCode == 32) {
-		currentKey = '';
-	} else {
-
-		words += currentKey;
-		typedKey += currentKey;
-		for (var i=0; i<val; i++) {
-			words += ' ';
-			typedKey += currentKey;
-		}
-
-
-
-		
-	}
-
-
-
-if(words.length > limitLength) {
-	lastWord = '';
-	for (var i = words.length-1; i >= 0; i--) {
-		if(words[i] === ' ') {
-			lastWord = lastWord + words[i];
-		} else {
-			lastWord = lastWord + words[i];
-			break;
-		}
-	}
-	words = words.slice(lastWord.length);
-	// print("too much!");
-	print(words.length);
-}
-
+  if(keyCode == 37 || keyCode == 39) {
+    if(keyCode == 37) {
+      if(option > 1) {
+        option--;
+      }
+      if(res > 8) {
+        res--;
+      }
+    } else if(keyCode == 39) {
+      if(option < 12) {
+        option++;
+      }
+      if(res < 19) {
+        res++;
+      }
+    }
+    placeParticles();
+  }
 
 	
 
 }
 
 function placeParticles() {
+  
+  particles = [];
+  
+  if(option >= 1 && option <=4) {
+    imgDisplay = packed;
+  } else if(option >= 5 && option <= 8) {
+    imgDisplay = maybe;
+  } else if(option >= 9 && option <= 12) {
+    imgDisplay = secured;
+  }
 
 	for(var i = 0; i<width; i+=res) {
-      for(var j=0; j<height; j+=res) {
-        let x = (i/width) *img.width;
-        let y = (j/height) * img.height;
-        let c = img.get(x, y);
+      for(var j=100; j<height-80; j+=res) {
+        let x = (i/width) *imgDisplay.width;
+        let y = (j/height) * imgDisplay.height;
+        let c = imgDisplay.get(x, y);
         
         if(c[3] != 0) {
           particles.push(new Particle(i,j))
@@ -254,8 +223,8 @@ class Particle {
 		let homeD = dist(this.x, this.y, this.homeX, this.homeY);
 		let homeA = atan2(this.homeY - this.y, this.homeX - this.x);
 
-		let mouseF = constrain(map(mouseD, 0, 100, 20, 0), 0, 10);
-		let homeF = map(homeD, 0, 100, 0, 20);
+		let mouseF = constrain(map(mouseD, 0, 150, 15, 0), 0, 10);
+		let homeF = map(homeD, 0, 150, 0, 15);
 
 		let vx = cos(mouseA) * mouseF;
 		vx += cos(homeA) * homeF;
@@ -263,12 +232,10 @@ class Particle {
 		let vy = sin(mouseA) * mouseF;
 		vy += sin(homeA) * homeF;
 
-		if(mouseD < 200 && mouseD > 100) {
-			this.emoji = 2;
-		} else if(mouseD <= 100) {
+		if(mouseD <= 90) {
 			this.emoji = 0;
 		} else {
-			this.emoji = 2;
+			this.emoji = 1;
 		}
 
 
@@ -279,7 +246,7 @@ class Particle {
 	}
 
 	draw() {
-		textSize(15);
+		textSize(10);
         text(emojiArray[this.emoji], this.x, this.y);
 
 	}
