@@ -10,13 +10,19 @@ var typedKey = '';
 var printWords = '';
 var lastWord = '';
 var limitLength = 0;
-var emoji = "🤮😧😷";
+var emoji = "🤮🦠😷";
 
 var emojiArray = Array.from(emoji);
 
 let particles = [];
 
-let res = 12;
+let res = 8;
+var img;
+
+
+function preload() {
+  img = loadImage("logo.png");
+}
 
 
 
@@ -122,6 +128,8 @@ function draw() {
 	// 		val = 15;
 	// 	}
 	// }
+	textSize(40);
+	text(emojiArray[1], mouseX-20, mouseY+15);
 
 
 	for(var i=0; i<particles.length; i++) {
@@ -129,6 +137,8 @@ function draw() {
 		particles[i].update();
 		particles[i].draw();
 	}
+  
+    // image(img, 0, 0, width, height);
 
 
 	// text(words, 42.5, 80, width-85, height-80);
@@ -212,9 +222,17 @@ if(words.length > limitLength) {
 
 function placeParticles() {
 
-	for(var i=0; i<50; i++) {
-		particles.push(new Particle(Math.floor(random(42.5, width-42.5)), Math.floor(random(80, height-80))));
-	}
+	for(var i = 0; i<width; i+=res) {
+      for(var j=0; j<height; j+=res) {
+        let x = (i/width) *img.width;
+        let y = (j/height) * img.height;
+        let c = img.get(x, y);
+        
+        if(c[3] != 0) {
+          particles.push(new Particle(i,j))
+        }
+      }
+    }
 }
 
 class Particle {
@@ -236,8 +254,8 @@ class Particle {
 		let homeD = dist(this.x, this.y, this.homeX, this.homeY);
 		let homeA = atan2(this.homeY - this.y, this.homeX - this.x);
 
-		let mouseF = constrain(map(mouseD, 0, 200, 20, 0), 0, 10);
-		let homeF = map(homeD, 0, 200, 0, 20);
+		let mouseF = constrain(map(mouseD, 0, 100, 20, 0), 0, 10);
+		let homeF = map(homeD, 0, 100, 0, 20);
 
 		let vx = cos(mouseA) * mouseF;
 		vx += cos(homeA) * homeF;
@@ -246,7 +264,7 @@ class Particle {
 		vy += sin(homeA) * homeF;
 
 		if(mouseD < 200 && mouseD > 100) {
-			this.emoji = 0;
+			this.emoji = 2;
 		} else if(mouseD <= 100) {
 			this.emoji = 0;
 		} else {
@@ -261,7 +279,7 @@ class Particle {
 	}
 
 	draw() {
-		textSize(40);
+		textSize(15);
         text(emojiArray[this.emoji], this.x, this.y);
 
 	}
